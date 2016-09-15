@@ -8,9 +8,11 @@
 #import <Foundation/Foundation.h>
 #import "Config.h"
 
+#define isNull(value) value == nil || [value isKindOfClass:[NSNull class]]
+
 @implementation Config
 
-@synthesize stationaryRadius, distanceFilter, desiredAccuracy, isDebugging, activityType, stopOnTerminate, url, syncUrl, syncThreshold, httpHeaders, saveBatteryOnBackground, maxLocations, pauseLocationUpdates;
+@synthesize stationaryRadius, distanceFilter, desiredAccuracy, isDebugging, activityType, stopOnTerminate, url, syncUrl, syncThreshold, httpHeaders, saveBatteryOnBackground, maxLocations, pauseLocationUpdates, locationProvider;
 
 -(id) init {
     self = [super init];
@@ -29,6 +31,7 @@
     maxLocations = 10000;
     syncThreshold = 100;
     pauseLocationUpdates = YES;
+    locationProvider = DISTANCE_FILTER_PROVIDER;
 
     return self;
 }
@@ -55,12 +58,12 @@
     if (config[@"stopOnTerminate"]) {
         instance.stopOnTerminate = [config[@"stopOnTerminate"] boolValue];
     }
-    if (config[@"url"]) {
+    if (isNull(config[@"url"]) == NO) {
         instance.url = config[@"url"];
     }
-    if (config[@"syncUrl"]) {
+    if (isNull(config[@"syncUrl"]) == NO) {
         instance.syncUrl = config[@"syncUrl"];
-    } else if (config[@"url"]) {
+    } else if (isNull(config[@"url"]) == NO) {
         instance.syncUrl = config[@"url"];
     }
     if (config[@"syncThreshold"]) {
@@ -77,6 +80,9 @@
     }
     if (config[@"pauseLocationUpdates"]) {
         instance.pauseLocationUpdates = [config[@"pauseLocationUpdates"] boolValue];
+    }
+    if (config[@"locationProvider"]) {
+        instance.locationProvider = [config[@"locationProvider"] integerValue];
     }
 
     return instance;
